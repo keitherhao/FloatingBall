@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QLabel>
 
+#include <QGestureEvent>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class FloatingBall;
@@ -18,9 +20,32 @@ public:
     FloatingBall(QWidget *parent = nullptr);
     ~FloatingBall();
 
-// protected:
+protected:
     void paintEvent(QPaintEvent *event) override;
+    // 重写鼠标进入事件
+    void enterEvent(QEnterEvent *event) override;
+    // 重写鼠标离开事件
+    void leaveEvent(QEvent *event) override;
+    // 重写鼠标按下事件
+    void mousePressEvent(QMouseEvent *event) override;
+    // 重写鼠标释放事件
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    // 重写鼠标移动事件
+    void mouseMoveEvent(QMouseEvent *event) override;
+    // 重写鼠标双击事件
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    // 重写鼠标滚轮事件
+    void wheelEvent(QWheelEvent *event) override;
 
+
+    // 重写手势事件函数
+    bool gestureEvent(QGestureEvent *event);
+    // 处理缩放手势
+    void pinchTriggered(QPinchGesture *gesture);
+    // 处理移动手势
+    void panTriggered(QPanGesture *gesture);
+    // 处理滑动手势
+    void swipeTriggered(QSwipeGesture *gesture);
 private:
     Ui::FloatingBall *ui;
 

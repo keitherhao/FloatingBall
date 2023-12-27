@@ -18,8 +18,6 @@ int main(int argc, char *argv[])
         }
     }
     FloatingBall w;
-    //全透明
-
 
     w.show();
     return a.exec();
