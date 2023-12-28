@@ -212,7 +212,7 @@ void FloatingBall::wheelEvent(QWheelEvent *event)
 {
     // 通过滚轮上下滚动调整浮球大小
     QSize BallSzie = circleLabel[0]->size();
-    // QPoint BallPoint = circleLabel[0]->pos();
+
     if (event->angleDelta().y() > 0) // 如果滚轮向上滚动
     {
         qDebug() << "向上滚动";
@@ -223,8 +223,16 @@ void FloatingBall::wheelEvent(QWheelEvent *event)
         qDebug() << "向下滚动";
         BallSzie = BallSzie - QSize(10,10);
     }
-    // 设置圆形控件的位置为窗口的中心
-    // circleLabel[0]->move(event->globalPosition().toPoint().x() - BallSzie.width()/2,event->globalPosition().toPoint().y() - BallSzie.height()/2);
+    // qDebug() << circleLabel[0]->pos();
+    // qDebug() << event->globalPosition().toPoint();
+    // qDebug() << FloatingBall::pos();
+    // qDebug() << QPoint(BallSzie.width(), BallSzie.height());
+    // 设置圆形控件的位置 使圆心和鼠标点重合
+    // QPoint BallPoint = event->globalPosition().toPoint() - FloatingBall::pos() - QPoint(BallSzie.width()/2, BallSzie.height()/2);
+    // 设置圆形控件的位置 保持在窗口的正中心，也就是位置不改变
+    QPoint BallPoint = QPoint(width() / 2 - BallSzie.width() / 2, height() / 2 - BallSzie.height() / 2);
+    // qDebug() << BallPoint;
+    circleLabel[0]->move(BallPoint);
     // 重新调整大小
     circleLabel[0]->resize(BallSzie);
     // 设置圆形控件的遮罩为圆形
