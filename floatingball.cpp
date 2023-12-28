@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include <QBitmap>
+#include <QVector>
 
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -10,9 +11,10 @@
 #include <QMessageBox>
 
 #include <QGestureEvent>
+#include <QMouseEvent>
 
 FloatingBall::FloatingBall(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent, Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint)
     , ui(new Ui::FloatingBall)
 {
     ui->setupUi(this);
@@ -21,6 +23,7 @@ FloatingBall::FloatingBall(QWidget *parent)
     // 使用Qt::WindowTitleHint标志来显示窗口的标题栏，这会显示窗口的标题和图标。
     // 使用Qt::WindowCloseButtonHint标志来显示窗口的关闭按钮，这会显示一个可以关闭窗口的按钮
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    setFixedSize(200, 200); // 设置悬浮球的大小
 
     // 全透明
     // setWindowOpacity(0.2);
@@ -32,15 +35,16 @@ FloatingBall::FloatingBall(QWidget *parent)
     // this->setAttribute(Qt::WA_TranslucentBackground, true);
 
     // 创建圆形控件
-    circleLabel = new QLabel(this);
+    circleLabel[0] = new QLabel(this);
     // 设置圆形控件的大小
-    circleLabel->resize(100, 100);
+    circleLabel[0]->resize(100, 100);
     // 设置圆形控件的位置为窗口的中心
-    circleLabel->move(width() / 2 - circleLabel->width() / 2, height() / 2 - circleLabel->height() / 2);
+    circleLabel[0]->move(width() / 2 - circleLabel[0]->width() / 2, height() / 2 - circleLabel[0]->height() / 2);
     // 设置圆形控件的背景颜色为X色
-    circleLabel->setStyleSheet("background-color: blue;");
+    circleLabel[0]->setStyleSheet("background-color: blue;");
     // 设置圆形控件的遮罩为圆形
-    circleLabel->setMask(QRegion(0, 0, 100, 100, QRegion::Ellipse));
+    circleLabel[0]->setMask(QRegion(0, 0, 100, 100, QRegion::Ellipse));
+
 
     // 注册需要识别的手势类型
     this->grabGesture(Qt::PinchGesture);
@@ -62,7 +66,28 @@ void FloatingBall::paintEvent(QPaintEvent *event)
     // 设置画笔颜色为黑色
     painter.setPen(Qt::black);
     // 绘制一个圆形边框
-    painter.drawEllipse(circleLabel->geometry());
+    painter.drawEllipse(circleLabel[0]->geometry());
+
+    for (auto ball : balls) {
+        // 获取悬浮球的中心点和半径
+        QPointF center = ball.first;
+        qreal radius = ball.second;
+
+        // 绘制一个椭圆，作为悬浮球
+        painter.drawEllipse(center, radius, radius);
+    }
+
+
+    for (int i = 0; i < Balls.size(); i++) {
+        // // 设置圆形控件的大小
+        // circleLabel[0]->resize(100, 100);
+        // // 设置圆形控件的位置为窗口的中心
+        // circleLabel[0]->move(i * 10, i * 10);
+        // // 设置圆形控件的背景颜色为X色
+        // Balls.takeAt(i).setStyleSheet("background-color: blue;");
+        // // 设置圆形控件的遮罩为圆形
+        // Balls.takeAt(i).setMask(QRegion(0, 0, 100, 100, QRegion::Ellipse));
+    }
 }
 
 
@@ -70,7 +95,7 @@ void FloatingBall::paintEvent(QPaintEvent *event)
 void FloatingBall::enterEvent(QEnterEvent *event)
 {
     // 您可以在这里添加您想要的功能，例如改变按钮的颜色
-    FloatingBall::circleLabel->setStyleSheet("background-color: yellow");
+    FloatingBall::circleLabel[0]->setStyleSheet("background-color: yellow");
     qDebug() << "enterEvent";
     // 调用基类的函数，以保留默认的行为
     // FloatingBall::enterEvent(event);
@@ -80,12 +105,13 @@ void FloatingBall::enterEvent(QEnterEvent *event)
 void FloatingBall::leaveEvent(QEvent *event)
 {
     // 您可以在这里添加您想要的功能，例如恢复按钮的颜色
-    this->circleLabel->setStyleSheet("background-color: green");
+    this->circleLabel[0]->setStyleSheet("background-color: green");
     qDebug() << "leaveEvent";
     // 调用基类的函数，以保留默认的行为
     // FloatingBall::leaveEvent(event);
 }
 
+static FloatingBall *newBall;
 // 重写鼠标按下事件
 void FloatingBall::mousePressEvent(QMouseEvent *event)
 {
@@ -93,6 +119,38 @@ void FloatingBall::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) // 如果是左键按下
     {
         qDebug() << "Left button pressed at" << event->pos();
+        // FloatingBall _sub;
+        // _sub.show();
+        // 创建一个新的悬浮球的对象，并设置其父窗口为主窗口
+        // newBall = new FloatingBall();
+        // // 设置新的悬浮球的位置和大小，使其中心与鼠标点击的位置重合
+        // newBall->setGeometry(pos().x() + 100, pos().y() + 100, 200, 200);
+        // // 显示新的悬浮球
+        // newBall->show();
+
+        // 创建圆形控件
+        // FloatingBall::circleLabel[1] = new QLabel(this);
+        // // 设置圆形控件的大小
+        // FloatingBall::circleLabel[1]->resize(100, 100);
+        // // 设置圆形控件的位置为窗口的中心
+        // FloatingBall::circleLabel[1]->move(0, 0);
+        // // 设置圆形控件的背景颜色为X色
+        // FloatingBall::circleLabel[1]->setStyleSheet("background-color: blue;");
+        // // 设置圆形控件的遮罩为圆形
+        // FloatingBall::circleLabel[1]->setMask(QRegion(0, 0, 100, 100, QRegion::Ellipse));
+
+
+        // 获取鼠标的位置
+        QPointF pos = event->pos();
+        // 生成一个随机的半径，范围为10到50
+        qreal radius = rand() % 41 + 10;
+        // 将鼠标的位置和半径作为一个对添加到悬浮球的向量中
+        balls.append(qMakePair(pos, radius));
+        // QLabel tmp = new QLabel(this);
+        // Balls.append(tmp);
+        // 更新窗口的绘图
+        this->update();
+
     }
     else if (event->button() == Qt::RightButton) // 如果是右键按下
     {
@@ -105,7 +163,7 @@ void FloatingBall::mousePressEvent(QMouseEvent *event)
 // 重写鼠标释放事件
 void FloatingBall::mouseReleaseEvent(QMouseEvent *event)
 {
-    // 您可以在这里添加您想要的功能，例如打印一条信息
+    //
     qDebug() << "Mouse released";
     // 调用基类的函数，以保留默认的行为
     // FloatingBall::mouseReleaseEvent(event);
@@ -114,33 +172,61 @@ void FloatingBall::mouseReleaseEvent(QMouseEvent *event)
 // 重写鼠标移动事件
 void FloatingBall::mouseMoveEvent(QMouseEvent *event)
 {
-    // 您可以在这里添加您想要的功能，例如跟随鼠标移动
-    // this->move(event->globalPosition() - QPoint(this->width() / 2, this->height() / 2));
-    // 调用基类的函数，以保留默认的行为
-    // FloatingBall::mouseMoveEvent(event);
+    // 拖动鼠标可以移动小球
+    if (event->buttons() & Qt::LeftButton) {
+        // qDebug() << "event->pos() = " << event->globalPosition().toPoint();
+        this->move(event->globalPosition().toPoint() - QPoint(100,100));
+        event->accept();
+    }
 }
 
 // 重写鼠标双击事件
 void FloatingBall::mouseDoubleClickEvent(QMouseEvent *event)
 {
     // 您可以在这里添加您想要的功能，例如弹出一个对话框
-    QMessageBox::information(this, "Double Click", "You double clicked the button");
+    // QMessageBox::information(this, "Double Click", "You double clicked the button");
     // 调用基类的函数，以保留默认的行为
     // FloatingBall::mouseDoubleClickEvent(event);
+    static bool IsShow = false;
+    if (IsShow == false) {
+        IsShow = true;
+        // 创建8个新的悬浮窗口
+        for (int i = 0; i < 8; ++i) {
+            FloatingBall *aBall = new FloatingBall;
+            aBall->move(event->globalPosition().toPoint() + QPoint(100 * cos(i * M_PI / 4), 100 * sin(i * M_PI / 4)) - QPoint(100,100));
+            BallsList.append(aBall);
+            aBall->show();
+        }
+    } else if (IsShow == true) {
+        // 清除8个悬浮窗口
+        IsShow = false;
+        for (FloatingBall *aBall : BallsList) {
+            aBall->close();
+        }
+        BallsList.clear(); // 清空列表
+    }
 }
 
 // 重写鼠标滚轮事件
 void FloatingBall::wheelEvent(QWheelEvent *event)
 {
     // 您可以在这里添加您想要的功能，例如改变按钮的大小
-    // if (event->delta() > 0) // 如果滚轮向上滚动
-    // {
-    //     this->resize(this->width() + 10, this->height() + 10);
-    // }
-    // else // 如果滚轮向下滚动
-    // {
-    //     this->resize(this->width() - 10, this->height() - 10);
-    // }
+    if (event->angleDelta().y() > 0) // 如果滚轮向上滚动
+    {
+        qDebug() << "向上滚动";
+        // circleLabel[0]->resize(circleLabel[0]->width() + 10, circleLabel[0]->height() + 10);
+        // 滚轮向上滚动，增大悬浮球的大小
+        setFixedSize(size() + QSize(10, 10));
+        update();
+    }
+    else // 如果滚轮向下滚动
+    {
+        qDebug() << "向下滚动";
+        // circleLabel[0]->resize(circleLabel[0]->width() - 10, circleLabel[0]->height() - 10);
+        // 滚轮向上滚动，增大悬浮球的大小
+        setFixedSize(size() - QSize(10, 10));
+        this->update();
+    }
     // 调用基类的函数，以保留默认的行为
     // FloatingBall::wheelEvent(event);
 }

@@ -50,6 +50,14 @@ private:
     Ui::FloatingBall *ui;
 
     // 圆形控件
-    QLabel *circleLabel;
+    QLabel *circleLabel[16];
+    QVector<QLabel>Balls;
+
+    // 声明一个成员变量，用于存储悬浮球的位置和半径
+    QVector<QPair<QPointF, qreal>> balls;
+
+    QPoint m_dragPosition;
+
+    QList<FloatingBall *> BallsList; // 用于保存悬浮窗口的列表
 };
 #endif // FLOATINGBALL_H
