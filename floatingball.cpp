@@ -23,7 +23,7 @@ FloatingBall::FloatingBall(QWidget *parent)
     // 使用Qt::WindowTitleHint标志来显示窗口的标题栏，这会显示窗口的标题和图标。
     // 使用Qt::WindowCloseButtonHint标志来显示窗口的关闭按钮，这会显示一个可以关闭窗口的按钮
     setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-    setFixedSize(200, 200); // 设置悬浮球的大小
+    setFixedSize(200, 200); // 设置窗口的大小
 
     // 全透明
     // setWindowOpacity(0.2);
@@ -59,23 +59,23 @@ FloatingBall::~FloatingBall()
 
 void FloatingBall::paintEvent(QPaintEvent *event)
 {
-    // 创建一个画家对象
-    QPainter painter(this);
-    // 设置抗锯齿
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    // 设置画笔颜色为黑色
-    painter.setPen(Qt::black);
-    // 绘制一个圆形边框
-    painter.drawEllipse(circleLabel[0]->geometry());
+    // // 创建一个画家对象
+    // QPainter painter(this);
+    // // 设置抗锯齿
+    // painter.setRenderHint(QPainter::Antialiasing, true);
+    // // 设置画笔颜色为黑色
+    // painter.setPen(Qt::black);
+    // // 绘制一个圆形边框
+    // painter.drawEllipse(circleLabel[0]->geometry());
 
-    for (auto ball : balls) {
-        // 获取悬浮球的中心点和半径
-        QPointF center = ball.first;
-        qreal radius = ball.second;
+    // for (auto ball : balls) {
+    //     // 获取悬浮球的中心点和半径
+    //     QPointF center = ball.first;
+    //     qreal radius = ball.second;
 
-        // 绘制一个椭圆，作为悬浮球
-        painter.drawEllipse(center, radius, radius);
-    }
+    //     // 绘制一个椭圆，作为悬浮球
+    //     painter.drawEllipse(center, radius, radius);
+    // }
 
 
     for (int i = 0; i < Balls.size(); i++) {
@@ -210,23 +210,26 @@ void FloatingBall::mouseDoubleClickEvent(QMouseEvent *event)
 // 重写鼠标滚轮事件
 void FloatingBall::wheelEvent(QWheelEvent *event)
 {
-    // 您可以在这里添加您想要的功能，例如改变按钮的大小
+    // 通过滚轮上下滚动调整浮球大小
+    QSize BallSzie = circleLabel[0]->size();
+    // QPoint BallPoint = circleLabel[0]->pos();
     if (event->angleDelta().y() > 0) // 如果滚轮向上滚动
     {
         qDebug() << "向上滚动";
-        // circleLabel[0]->resize(circleLabel[0]->width() + 10, circleLabel[0]->height() + 10);
-        // 滚轮向上滚动，增大悬浮球的大小
-        setFixedSize(size() + QSize(10, 10));
-        update();
+        BallSzie = BallSzie + QSize(10,10);
     }
     else // 如果滚轮向下滚动
     {
         qDebug() << "向下滚动";
-        // circleLabel[0]->resize(circleLabel[0]->width() - 10, circleLabel[0]->height() - 10);
-        // 滚轮向上滚动，增大悬浮球的大小
-        setFixedSize(size() - QSize(10, 10));
-        this->update();
+        BallSzie = BallSzie - QSize(10,10);
     }
+    // 设置圆形控件的位置为窗口的中心
+    // circleLabel[0]->move(event->globalPosition().toPoint().x() - BallSzie.width()/2,event->globalPosition().toPoint().y() - BallSzie.height()/2);
+    // 重新调整大小
+    circleLabel[0]->resize(BallSzie);
+    // 设置圆形控件的遮罩为圆形
+    circleLabel[0]->setMask(QRegion(0, 0, BallSzie.width(), BallSzie.height(), QRegion::Ellipse));
+    update();
     // 调用基类的函数，以保留默认的行为
     // FloatingBall::wheelEvent(event);
 }
